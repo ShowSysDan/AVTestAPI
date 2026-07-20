@@ -49,6 +49,24 @@ RowState: `0` None, `1` Modified, `2` Added, `3` Deleted. Only changed rows
 should be included, and the entity must allow individual update
 (`AllowIndividualUpdate` in its metadata).
 
+## Getting the code
+
+First time on a new machine — clone the repo and check out this branch:
+
+```bash
+git clone https://github.com/ShowSysDan/AVTestAPI.git
+cd AVTestAPI
+git checkout claude/av-api-writeback-app-09jdpe
+```
+
+If you already have the repo and just want the latest of this branch:
+
+```bash
+git fetch origin
+git checkout claude/av-api-writeback-app-09jdpe   # first time only
+git pull origin claude/av-api-writeback-app-09jdpe
+```
+
 ## Run it
 
 ```bash

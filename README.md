@@ -79,16 +79,20 @@ python app.py
 Open http://127.0.0.1:7070, go to **Settings**, paste your API key, hit **Test
 connection**, then load events and try a write.
 
-By default the server binds to `127.0.0.1` (this machine only). To listen on all
-network interfaces (e.g. to reach it from another device), set env vars:
+By default the server binds to `0.0.0.0` (all network interfaces), so it's
+reachable from other devices on your network. To restrict it to this machine
+only, set `AVTEST_HOST`:
 
 ```bash
-AVTEST_HOST=0.0.0.0 AVTEST_PORT=7070 python app.py
+AVTEST_HOST=127.0.0.1 AVTEST_PORT=7070 python app.py
 ```
 
-Note: `0.0.0.0` exposes the app — including your stored API key — to anything
-that can reach the host. Only do this on a trusted network, and consider
-turning off `debug` in `app.py` for anything beyond local testing.
+`debug` defaults to **off** because binding to `0.0.0.0` with Flask's debugger
+enabled is a remote-code-execution risk. Enable it for local dev with
+`AVTEST_DEBUG=1`.
+
+Note: on `0.0.0.0` the app — including your stored API key — is reachable by
+anything that can hit the host, so keep it on a trusted network.
 
 The SQLite database (`avtest.db`) is created automatically on first run and is
 git-ignored, as is any `.env`.

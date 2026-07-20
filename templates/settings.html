@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Settings · AV Test API{% endblock %}
+{% block content %}
+<h1>Settings</h1>
+<p class="muted">
+  Stored in SQLite. The API key is required before reading or writing.
+</p>
+
+<form method="post" class="card">
+  <label>API base URL
+    <input type="text" name="api_base_url" value="{{ settings.api_base_url }}"
+           placeholder="https://av2.artsvision.net/api">
+  </label>
+
+  <label>API key
+    <input type="text" name="api_key" value="{{ settings.api_key }}"
+           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off">
+  </label>
+
+  <label class="checkbox">
+    <input type="checkbox" name="ssl_verify" {% if settings.ssl_verify == '1' %}checked{% endif %}>
+    Verify SSL certificates
+  </label>
+
+  <div class="grid2">
+    <label>Default entity
+      <input type="text" name="default_entity" value="{{ settings.default_entity }}">
+    </label>
+    <label>Default event status filter
+      <input type="text" name="default_event_status" value="{{ settings.default_event_status }}">
+    </label>
+    <label>Read endpoint
+      <input type="text" name="read_endpoint" value="{{ settings.read_endpoint }}">
+    </label>
+    <label>Write endpoint
+      <input type="text" name="write_endpoint" value="{{ settings.write_endpoint }}">
+    </label>
+    <label>Modified RowState (SaveData)
+      <input type="text" name="write_row_state" value="{{ settings.write_row_state }}">
+      <small class="muted">0=None, 1=Modified, 2=Added, 3=Deleted</small>
+    </label>
+  </div>
+
+  <div class="actions">
+    <button type="submit" class="btn primary">Save settings</button>
+    <a class="btn" href="{{ url_for('test_connection') }}">Test connection</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Events · AV Test API{% endblock %}
+{% block content %}
+<h1>Events</h1>
+
+<form method="get" action="{{ url_for('events') }}" class="card filterbar">
+  <label>From (MM/DD/YYYY)
+    <input type="text" name="from" value="{{ date_from }}">
+  </label>
+  <label>To — exclusive (MM/DD/YYYY)
+    <input type="text" name="to" value="{{ date_to }}">
+  </label>
+  <label>Event Status
+    <input type="text" name="status" value="{{ status }}" placeholder="(any)">
+  </label>
+  <button type="submit" name="go" value="1" class="btn primary">Load events</button>
+</form>
+
+{% if error %}
+  <div class="flash flash-error">{{ error }}</div>
+{% endif %}
+
+{% if searched and not error %}
+  <p class="muted">{{ rows|length }} event(s) found.</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Id</th><th>Date</th><th>Start</th>
+        <th>Location</th><th>Project</th><th>Calendar text</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.Id }}</td>
+        <td>{{ row.Date|fmtdate }}</td>
+        <td>{{ row['Start Time']|fmtdate }}</td>
+        <td>{{ row.Location }}</td>
+        <td>{{ row.Project }}</td>
+        <td>{{ row['Text for Calendar'] }}</td>
+        <td><a class="btn small" href="{{ url_for('edit_event', event_id=row.Id) }}">Edit</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}

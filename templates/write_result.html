@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Write result · AV Test API{% endblock %}
+{% block content %}
+<h1>Write result — event {{ event_id }}</h1>
+
+<div class="card">
+  <p>
+    Outcome:
+    {% if result.ok %}
+      <span class="badge ok">SUCCESS</span>
+    {% else %}
+      <span class="badge fail">FAILED</span>
+    {% endif %}
+    · HTTP status: <strong>{{ result.status if result.status is not none else '—' }}</strong>
+  </p>
+  <p class="muted">Endpoint: <code>{{ result.endpoint }}</code></p>
+</div>
+
+<div class="card">
+  <h2>Changed fields sent</h2>
+  <table class="table">
+    <thead><tr><th>Field</th><th>New value</th></tr></thead>
+    <tbody>
+      {% for field, value in changes.items() %}
+        <tr><td>{{ field }}</td><td>{{ value }}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Request body (SaveData)</h2>
+  <pre class="code">{{ result.request|prettyjson }}</pre>
+</div>
+
+<div class="card">
+  <h2>Response</h2>
+  <pre class="code">{{ result.body|prettyjson }}</pre>
+</div>
+
+<div class="actions">
+  <a class="btn" href="{{ url_for('edit_event', event_id=event_id) }}">Back to event</a>
+  <a class="btn" href="{{ url_for('logs') }}">View write log</a>
+</div>
+{% endblock %}

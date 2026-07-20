@@ -167,6 +167,59 @@ def get_entity_names():
     return body
 
 
+def get_metadata(start_entity=None, fields_info=True):
+    """Call GetMetadata and return a flat list of entities with their
+    AllowIndividualUpdate flag and field count.
+
+    This is how you discover which entities can actually be written: SaveData
+    only accepts an entity whose metadata has AllowIndividualUpdate = true.
+    """
+    settings = _settings()
+    if not settings.get("api_key"):
+        raise AVError("No API key configured. Set one on the Settings page first.")
+    params = {"fieldsInfo": "true" if fields_info else "false"}
+    if start_entity:
+        params["startWithEntity"] = start_entity
+    url = _url(settings, "getmetadata")
+    try:
+        resp = requests.get(
+            url,
+            params=params,
+            headers=_headers(settings),
+            verify=_ssl_verify(settings),
+            timeout=config.REQUEST_TIMEOUT,
+        )
+    except requests.RequestException as exc:
+        raise AVError(f"Request to {url} failed: {exc}") from exc
+    try:
+        body = resp.json()
+    except ValueError as exc:
+        raise AVError(f"Non-JSON response ({resp.status_code}): {resp.text[:300]}") from exc
+    if isinstance(body, dict):
+        if body.get("Status") == 3:
+            raise AVError(f"ArtsVision error: {body.get('Data')}")
+        data = body.get("Data", [])
+    else:
+        data = body
+
+    flat = []
+
+    def walk(entities, depth):
+        for ent in entities or []:
+            flat.append(
+                {
+                    "entity": ent.get("Entity"),
+                    "allow_update": bool(ent.get("AllowIndividualUpdate")),
+                    "field_count": len(ent.get("Fields") or []),
+                    "depth": depth,
+                }
+            )
+            walk(ent.get("Entities"), depth + 1)
+
+    walk(data, 0)
+    return flat
+
+
 # --- Writing (experimental) --------------------------------------------------
 
 def build_write_payload(settings, event_id, changes):

@@ -7,6 +7,7 @@ endpoint while logging the full request/response for inspection.
 """
 
 import json
+import os
 from datetime import date, datetime, timedelta
 
 from flask import (
@@ -194,10 +195,32 @@ def write_event(event_id):
     )
 
 
+@app.route("/metadata")
+def metadata():
+    start = request.args.get("entity", "").strip() or None
+    entities, error = [], None
+    if request.args.get("go"):
+        try:
+            entities = av_client.get_metadata(start_entity=start)
+        except av_client.AVError as exc:
+            error = str(exc)
+    return render_template(
+        "metadata.html",
+        entities=entities,
+        error=error,
+        start=start or "",
+        searched=bool(request.args.get("go")),
+    )
+
+
 @app.route("/logs")
 def logs():
     return render_template("logs.html", logs=db.get_writeback_logs())
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=7070, debug=True)
+    # Host/port are configurable via env vars. Default binds to localhost only;
+    # set AVTEST_HOST=0.0.0.0 to listen on all network interfaces.
+    host = os.environ.get("AVTEST_HOST", "127.0.0.1")
+    port = int(os.environ.get("AVTEST_PORT", "7070"))
+    app.run(host=host, port=port, debug=True)

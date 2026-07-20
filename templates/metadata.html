@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Metadata · AV Test API{% endblock %}
+{% block content %}
+<h1>Entity metadata</h1>
+<p class="muted">
+  Discover which entities are writable. <code>SaveData</code> only accepts an
+  entity whose <strong>AllowIndividualUpdate</strong> is <span class="badge ok">true</span>.
+  Leave the box empty to list everything, or start from a branch like
+  <code>Event</code>.
+</p>
+
+<form method="get" action="{{ url_for('metadata') }}" class="card filterbar">
+  <label>Start with entity (optional)
+    <input type="text" name="entity" value="{{ start }}" placeholder="(all entities)">
+  </label>
+  <button type="submit" name="go" value="1" class="btn primary">Load metadata</button>
+</form>
+
+{% if error %}
+  <div class="flash flash-error">{{ error }}</div>
+{% endif %}
+
+{% if searched and not error %}
+  {% set writable = entities | selectattr('allow_update') | list %}
+  <p class="muted">
+    {{ entities|length }} entities · {{ writable|length }} allow individual update.
+  </p>
+  {% if writable %}
+  <div class="card">
+    <h2>Writable entities</h2>
+    <p class="muted">These accept a SaveData with a modified/added/deleted row.</p>
+    <ul>
+      {% for e in writable %}<li><code>{{ e.entity }}</code> ({{ e.field_count }} fields)</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <table class="table">
+    <thead><tr><th>Entity</th><th>Individual update?</th><th>Fields</th></tr></thead>
+    <tbody>
+      {% for e in entities %}
+      <tr>
+        <td style="padding-left: {{ 0.6 + e.depth * 1.2 }}rem">
+          {% if e.depth %}<span class="muted">└ </span>{% endif %}<code>{{ e.entity }}</code>
+        </td>
+        <td>
+          {% if e.allow_update %}<span class="badge ok">yes</span>
+          {% else %}<span class="badge fail">no</span>{% endif %}
+        </td>
+        <td>{{ e.field_count }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}

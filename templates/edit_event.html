@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Edit event {{ event_id }} · AV Test API{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('events') }}">&larr; Back to events</a></p>
+<h1>Edit event {{ event_id }}</h1>
+<p class="muted">
+  {{ event.Project }} · {{ event.Location }} · {{ event.Date|fmtdate }}
+</p>
+<p class="muted">
+  Last update: {{ event['Update Date']|fmtdate }} by {{ event['Update User'] or '—' }}
+  · RowState is set to Modified (1) on save. Only changed fields are sent.
+</p>
+
+<form method="post" action="{{ url_for('write_event', event_id=event_id) }}">
+  <div class="card">
+    <h2>Primary fields</h2>
+    {% for field in curated %}
+      {% set val = event[field] if event[field] is not none else '' %}
+      <label>{{ field }}
+        <input type="hidden" name="original_{{ field }}" value="{{ val }}">
+        {% if field in ['Event Notes', 'General Info Other Notes', 'Notes', 'Notes to Manager'] %}
+          <textarea name="value_{{ field }}" rows="3">{{ val }}</textarea>
+        {% else %}
+          <input type="text" name="value_{{ field }}" value="{{ val }}">
+        {% endif %}
+      </label>
+    {% endfor %}
+  </div>
+
+  {% if other_populated %}
+  <details class="card">
+    <summary>All other populated fields ({{ other_populated|length }})</summary>
+    <p class="muted">Edit any of these to include them in the write test.</p>
+    {% for field in other_populated %}
+      {% set val = event[field] if event[field] is not none else '' %}
+      <label>{{ field }}
+        <input type="hidden" name="original_{{ field }}" value="{{ val }}">
+        <input type="text" name="value_{{ field }}" value="{{ val }}">
+      </label>
+    {% endfor %}
+  </details>
+  {% endif %}
+
+  <div class="actions">
+    <button type="submit" class="btn primary">Write changes to ArtsVision</button>
+    <a class="btn" href="{{ url_for('events') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Write log · AV Test API{% endblock %}
+{% block content %}
+<h1>Write-back log</h1>
+<p class="muted">Every SaveData attempt is recorded here (most recent first).</p>
+
+{% if not logs %}
+  <p>No write attempts yet.</p>
+{% else %}
+  {% for row in logs %}
+  <details class="card">
+    <summary>
+      {% if row.ok %}<span class="badge ok">OK</span>{% else %}<span class="badge fail">FAIL</span>{% endif %}
+      #{{ row.id }} · event {{ row.event_id }} · {{ row.ts }} · HTTP {{ row.response_status }}
+    </summary>
+    <p class="muted">Endpoint: <code>{{ row.endpoint }}</code></p>
+    <h3>Request</h3>
+    <pre class="code">{{ row.request_json }}</pre>
+    <h3>Response</h3>
+    <pre class="code">{{ row.response_body }}</pre>
+  </details>
+  {% endfor %}
+{% endif %}
+{% endblock %}

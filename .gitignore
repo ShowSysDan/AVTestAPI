@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# App data
+*.db
+avtest.db
+instance/
+
+# Secrets
+.env
+database.env
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/

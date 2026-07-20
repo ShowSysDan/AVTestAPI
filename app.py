@@ -219,8 +219,12 @@ def logs():
 
 
 if __name__ == "__main__":
-    # Host/port are configurable via env vars. Default binds to localhost only;
-    # set AVTEST_HOST=0.0.0.0 to listen on all network interfaces.
-    host = os.environ.get("AVTEST_HOST", "127.0.0.1")
+    # Host/port are configurable via env vars. Default binds to 0.0.0.0 (all
+    # network interfaces); set AVTEST_HOST=127.0.0.1 to restrict to localhost.
+    host = os.environ.get("AVTEST_HOST", "0.0.0.0")
     port = int(os.environ.get("AVTEST_PORT", "7070"))
-    app.run(host=host, port=port, debug=True)
+    # Debug defaults OFF: with the app reachable on the network, Flask's debug
+    # reloader/debugger is a remote-code-execution risk. Set AVTEST_DEBUG=1 to
+    # enable it for local development only.
+    debug = os.environ.get("AVTEST_DEBUG", "0") == "1"
+    app.run(host=host, port=port, debug=debug)

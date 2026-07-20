@@ -79,6 +79,17 @@ python app.py
 Open http://127.0.0.1:7070, go to **Settings**, paste your API key, hit **Test
 connection**, then load events and try a write.
 
+By default the server binds to `127.0.0.1` (this machine only). To listen on all
+network interfaces (e.g. to reach it from another device), set env vars:
+
+```bash
+AVTEST_HOST=0.0.0.0 AVTEST_PORT=7070 python app.py
+```
+
+Note: `0.0.0.0` exposes the app — including your stored API key — to anything
+that can reach the host. Only do this on a trusted network, and consider
+turning off `debug` in `app.py` for anything beyond local testing.
+
 The SQLite database (`avtest.db`) is created automatically on first run and is
 git-ignored, as is any `.env`.
 

@@ -195,6 +195,24 @@ def write_event(event_id):
     )
 
 
+@app.route("/metadata")
+def metadata():
+    start = request.args.get("entity", "").strip() or None
+    entities, error = [], None
+    if request.args.get("go"):
+        try:
+            entities = av_client.get_metadata(start_entity=start)
+        except av_client.AVError as exc:
+            error = str(exc)
+    return render_template(
+        "metadata.html",
+        entities=entities,
+        error=error,
+        start=start or "",
+        searched=bool(request.args.get("go")),
+    )
+
+
 @app.route("/logs")
 def logs():
     return render_template("logs.html", logs=db.get_writeback_logs())

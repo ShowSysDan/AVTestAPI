@@ -58,7 +58,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open http://127.0.0.1:5000, go to **Settings**, paste your API key, hit **Test
+Open http://127.0.0.1:7070, go to **Settings**, paste your API key, hit **Test
 connection**, then load events and try a write.
 
 The SQLite database (`avtest.db`) is created automatically on first run and is
